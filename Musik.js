@@ -1,4 +1,4 @@
-const Discord, { Interaction, GuildMember, Snowflake } = require('discord.js');
+const { Interaction, GuildMember, Snowflake } = require('discord.js');
 const {
     AudioPlayerStatus,
     AudioResource,
