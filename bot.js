@@ -139,4 +139,4 @@ bot.on('interactionCreate', interaction => {
 });
 
 
-bot.login(auth.token);
+bot.login(auth.client_token);
