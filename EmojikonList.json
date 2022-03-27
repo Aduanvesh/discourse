@@ -1,0 +1,59 @@
+{
+    "0":{
+        "id": 0,
+        "name": "Smiley",
+        "sprite": "🙂",
+        "evolve": 1,
+        "evolveLvl": 5
+    },
+    "1":{
+        "id": 1,
+        "name": "Grinner",
+        "sprite": "😀",
+        "evolve": 2,
+        "evolveLvl": 10
+    },
+    "2":{
+        "id": 2,
+        "name": "Psychopath",
+        "sprite": "😃"
+    },
+    "3":{
+        "id": 3,
+        "name": "Laffin",
+        "sprite": "😅",
+        "evolve": 4,
+        "evolveLvl": 5
+    },
+    "4":{
+        "id": 4,
+        "name": "Joyton",
+        "sprite": "😂",
+        "evolve": 5,
+        "evolveLvl": 10
+    },
+    "5":{
+        "id": 5,
+        "name": "Roflopagus",
+        "sprite": "🤣"
+    },
+    "6":{
+        "id": 6,
+        "name": "Hawt",
+        "sprite": "🥵",
+        "evolve": 7,
+        "evolveLvl": 5
+    },
+    "7":{
+        "id": 7,
+        "name": "Heated",
+        "sprite": "😡",
+        "evolve": 8,
+        "evolveLvl": 10
+    },
+    "8":{
+        "id": 8,
+        "name": "FFS",
+        "sprite": "🤬"
+    }
+}
