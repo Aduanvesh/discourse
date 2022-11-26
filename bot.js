@@ -11,11 +11,10 @@ const Pacman = require('./Pacman.js');
 const Volcano = require('./Volcano.js');
 const Emojikon = require('./Emojikon.js');
 //const Musik = require('./Musik.js');
-const { not } = require('cheerio/lib/api/traversing');
+
 
 let mode = 0;
 let data = { id: 0 };
-let check = undefined;
 
 
 
@@ -29,7 +28,7 @@ logger.add(new logger.transports.Console, {
 var bot = new Client({
     //token: auth.token,
     autorun: true,
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS]
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS]
 });
 
 bot.on('ready', () => {
@@ -55,7 +54,7 @@ bot.on('messageCreate', function (msg) {
             Trollin.writeReact(msg, '🤓', 1);
         }
         else if (msg.content.toLowerCase() === 'so long gay bowser') {
-            msg.channel.send('https://tenor.com/view/the-simpsons-crying-robot-robot-explosion-melting-head-gif-3722753').then((result) => {
+            msg.channel.send('https://tenor.com/view/the-simpsons-crying-robot-robot-explosion-melting-head-gif-3722753').then(() => {
                 process.exit()
             });
         } else {
@@ -101,11 +100,11 @@ bot.on('messageCreate', function (msg) {
             })
         }
     } else if (mode === 4) {
-
+        console.log('unused yet');
     }
 });
 
-bot.on('message', async message => {
+bot.on('messageCreate', async message => {
     if (message.author.bot) return;
     let prefix = '!';
     if (message.content.startsWith(prefix)) {
@@ -133,7 +132,7 @@ bot.on('interactionCreate', interaction => {
             //await i.update({ content: 'A button was clicked!', components: [] });
         }
     });*/
-    if (interaction.customId === 'rock' || interaction.customId === 'paper' || interaction.customId === 'scissors') Volcano.buttonHandler(interaction) 
+    if (interaction.customId === 'rock' || interaction.customId === 'paper' || interaction.customId === 'scissors') Volcano.buttonHandler(interaction)
     else Emojikon.buttonHandler(interaction);
     return interaction.deferUpdate();
 });
