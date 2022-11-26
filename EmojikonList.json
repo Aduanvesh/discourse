@@ -4,56 +4,65 @@
         "name": "Smiley",
         "sprite": "🙂",
         "evolve": 1,
-        "evolveLvl": 5
+        "evolveLvl": 5,
+        "tier": 1
     },
     "1":{
         "id": 1,
         "name": "Grinner",
         "sprite": "😀",
         "evolve": 2,
-        "evolveLvl": 10
+        "evolveLvl": 10,
+        "tier": 2
     },
     "2":{
         "id": 2,
         "name": "Psychopath",
-        "sprite": "😃"
+        "sprite": "😃",
+        "tier": 3
     },
     "3":{
         "id": 3,
         "name": "Laffin",
         "sprite": "😅",
         "evolve": 4,
-        "evolveLvl": 5
+        "evolveLvl": 5,
+        "tier": 1
     },
     "4":{
         "id": 4,
         "name": "Joyton",
         "sprite": "😂",
         "evolve": 5,
-        "evolveLvl": 10
+        "evolveLvl": 10,
+        "tier": 2
     },
     "5":{
         "id": 5,
         "name": "Roflopagus",
-        "sprite": "🤣"
+        "sprite": "🤣",
+        "tier": 3
     },
     "6":{
         "id": 6,
         "name": "Hawt",
         "sprite": "🥵",
         "evolve": 7,
-        "evolveLvl": 5
+        "evolveLvl": 5,
+        "tier": 1
     },
     "7":{
         "id": 7,
         "name": "Heated",
         "sprite": "😡",
         "evolve": 8,
-        "evolveLvl": 10
+        "evolveLvl": 10,
+        "tier": 2
     },
     "8":{
         "id": 8,
         "name": "FFS",
-        "sprite": "🤬"
+        "sprite": "🤬",
+        "tier": 3
     }
 }

@@ -7,20 +7,30 @@ let save = JSON.parse(read);
 const pokemonInfo = require('./EmojikonList');
 
 const space = '▪️▪️▪️▪️';
-
+/**
+ *  !poke - Currently evolves 2 pokemon as a test.
+ *  !list
+ */
 exports.handler = (message, prefix) => {
     if (message.content.startsWith(`${prefix}poke`)) {
         evolve(message, 1, 2);
     }
-    if (message.content.startsWith(`${prefix}listpoke`)) {
+    else if (message.content.startsWith(`${prefix}listpoke`)) {
         list(message);
     }
-    if (message.content.startsWith(`${prefix}starter`)) {
+    else if (message.content.startsWith(`${prefix}starter`)) {
         starter(message);
+    }
+    else if (message.content.startsWith(`${prefix}catch`)) {
+        catchPokemon();
     }
 }
 
-evolve = (message, id1, id2) => {
+const catchPokemon = () => {
+    console.log('tryna catch poke');
+}
+
+const evolve = (message, id1, id2) => {
     console.log(id1, id2);
     const og = pokemonInfo[id1].sprite;
     const newg = pokemonInfo[id2].sprite;
@@ -39,20 +49,28 @@ evolve = (message, id1, id2) => {
     })
 }
 
-list = (msg) => {
-    let playerid = msg.author.id;
-    let player = getPlayerInfo(playerid).pokemon
-    for (let i = 0; i < player.length; i++) {
-        msg.channel.send(`Name: ${pokemonInfo[player[i].id].name} \nLevel: ${player[i].level} \nXP to next level: ${100 - player[i].xp}`);
-    }
+
+/**
+ * Lists the players pokemon using their player ID and the save file.
+ * @param {Object} msg discord message object
+ */
+const list = (msg) => {
+    let playerId = msg.author.id;
+    let player = getPlayerInfo(playerId)
+    if (player) {
+        let playerPokemon = player.pokemon
+        for (let i = 0; i < playerPokemon.length; i++)
+            msg.channel.send(`Name: ${pokemonInfo[playerPokemon[i].id].name} \nLevel: ${playerPokemon[i].level} \nXP to next level: ${100 - playerPokemon[i].xp}`);
+    } else msg.channel.send(`Player save not found`);
+
 }
 
-getPlayerInfo = (id) => {
+const getPlayerInfo = (id) => {
     console.log(save, save[id]);
     return save[id];
 }
 
-starter = (msg) => {
+const starter = (msg) => {
     const row = new MessageActionRow()
         .addComponents(
             new MessageButton()
@@ -71,7 +89,7 @@ starter = (msg) => {
     msg.channel.send({ content: 'Choose your starter emoji', components: [row] });
 }
 
-saveFile = () => {
+const saveFile = () => {
     fs.writeFileSync(path, JSON.stringify(save, null, 2))
 }
 
@@ -106,18 +124,38 @@ exports.emojiHandler = (msg) => {
     }
 }
 
-levelUp = (playerid, index, msg) => {
+const levelUp = (playerid, index, msg) => {
+    let { xp, level, id } = save[playerid].pokemon[index];
+    xp += 50;
+    if (xp >= 100) {
+        xp = 0;
+        level += 1;
+        msg.channel.send(`${pokemonInfo[id].name} has levelled up to ${level}`);
+        if (level >= pokemonInfo[id].evolveLvl) {
+            evolve(msg, pokemonInfo[id].id, pokemonInfo[id].evolve);
+            id = pokemonInfo[id].evolve;
+            save[playerid].spriteCheck[index] = pokemonInfo[id].sprite;
+        }
+    }
+    save[playerid].pokemon[index] = { ...save[playerid].pokemon[index], xp, level, id }
+    saveFile();
+}
+
+/**
+ * const levelUp = (playerid, index, msg) => {
     save[playerid].pokemon[index].xp += 50;
     if (save[playerid].pokemon[index].xp >= 100) {
         save[playerid].pokemon[index].xp = 0;
         save[playerid].pokemon[index].level += 1;
-        saveFile();
         msg.channel.send(`${pokemonInfo[save[playerid].pokemon[index].id].name} has levelled up to ${save[playerid].pokemon[index].level}`);
+            saveFile();
         if (save[playerid].pokemon[index].level >= pokemonInfo[save[playerid].pokemon[index].id].evolveLvl) {
             evolve(msg, pokemonInfo[save[playerid].pokemon[index].id].id, pokemonInfo[save[playerid].pokemon[index].id].evolve);
             save[playerid].pokemon[index].id = pokemonInfo[save[playerid].pokemon[index].id].evolve;
             save[playerid].spriteCheck[index] = pokemonInfo[save[playerid].pokemon[index].id].sprite;
-            saveFile();
+                saveFile();
         }
     }
+    saveFile();
 }
+ */
