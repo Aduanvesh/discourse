@@ -94,18 +94,20 @@ const saveFile = () => {
 }
 
 exports.buttonHandler = (i) => {
-    let playerid = i.member.user.id;
-    if (!save[playerid]) {
-        save[playerid] = {
+    let playerId = i.member.user.id;
+    let chosenId =  parseInt(i.customId);
+    let { sprite, name } = pokemonInfo[chosenId];
+    if (!save[playerId]) {
+        save[playerId] = {
             pokemon: [{
-                id: parseInt(i.customId),
+                id: chosenId,
                 selfId: 1, //TODO
                 level: 1,
                 xp: 0
             }],
-            spriteCheck: [pokemonInfo[parseInt(i.customId)].sprite]
+            spriteCheck: [sprite]
         }
-        i.channel.send(`${i.member.user.username}, you have selected **${pokemonInfo[parseInt(i.customId)].name}** ${pokemonInfo[parseInt(i.customId)].sprite} as your starter.`);
+        i.channel.send(`${i.member.user.username}, you have selected **${name}** ${sprite} as your starter.`);
         console.log('saved:', save);
         saveFile()
     } else {
