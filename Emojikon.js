@@ -128,34 +128,16 @@ const levelUp = (playerid, index, msg) => {
     let { xp, level, id } = save[playerid].pokemon[index];
     xp += 50;
     if (xp >= 100) {
+        let { name, id: pokemonId, evolve: pokemonEvolve, evolveLvl } = pokemonInfo[id];
         xp = 0;
         level += 1;
-        msg.channel.send(`${pokemonInfo[id].name} has levelled up to ${level}`);
-        if (level >= pokemonInfo[id].evolveLvl) {
-            evolve(msg, pokemonInfo[id].id, pokemonInfo[id].evolve);
-            id = pokemonInfo[id].evolve;
+        msg.channel.send(`${name} has levelled up to ${level}`);
+        if (level >= evolveLvl) {
+            evolve(msg, pokemonId, pokemonEvolve);
+            id = pokemonEvolve;
             save[playerid].spriteCheck[index] = pokemonInfo[id].sprite;
         }
     }
     save[playerid].pokemon[index] = { ...save[playerid].pokemon[index], xp, level, id }
     saveFile();
 }
-
-/**
- * const levelUp = (playerid, index, msg) => {
-    save[playerid].pokemon[index].xp += 50;
-    if (save[playerid].pokemon[index].xp >= 100) {
-        save[playerid].pokemon[index].xp = 0;
-        save[playerid].pokemon[index].level += 1;
-        msg.channel.send(`${pokemonInfo[save[playerid].pokemon[index].id].name} has levelled up to ${save[playerid].pokemon[index].level}`);
-            saveFile();
-        if (save[playerid].pokemon[index].level >= pokemonInfo[save[playerid].pokemon[index].id].evolveLvl) {
-            evolve(msg, pokemonInfo[save[playerid].pokemon[index].id].id, pokemonInfo[save[playerid].pokemon[index].id].evolve);
-            save[playerid].pokemon[index].id = pokemonInfo[save[playerid].pokemon[index].id].evolve;
-            save[playerid].spriteCheck[index] = pokemonInfo[save[playerid].pokemon[index].id].sprite;
-                saveFile();
-        }
-    }
-    saveFile();
-}
- */
