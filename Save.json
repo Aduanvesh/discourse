@@ -6,10 +6,37 @@
         "selfId": 1,
         "level": 5,
         "xp": 0
+      },
+      {
+        "id": 0,
+        "selfId": 2,
+        "level": 1,
+        "xp": 0
+      },
+      {
+        "id": 0,
+        "selfId": 3,
+        "level": 1,
+        "xp": 0
+      },
+      {
+        "id": 0,
+        "selfId": 4,
+        "level": 1,
+        "xp": 0
       }
     ],
     "spriteCheck": [
-      "😡"
+      "😡",
+      {
+        "sprite": "🙂",
+        "selfIds": [
+          2,
+          3,
+          4
+        ],
+        "id": 0
+      }
     ]
   }
 }

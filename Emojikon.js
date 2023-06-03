@@ -7,27 +7,72 @@ let save = JSON.parse(read);
 const pokemonInfo = require('./EmojikonList');
 
 const space = '▪️▪️▪️▪️';
+const xpGain = 50;
+
 /**
  *  !poke - Currently evolves 2 pokemon as a test.
- *  !list
+ *  !listpoke
  */
 exports.handler = (message, prefix) => {
-    if (message.content.startsWith(`${prefix}poke`)) {
-        evolve(message, 1, 2);
-    }
-    else if (message.content.startsWith(`${prefix}listpoke`)) {
-        list(message);
-    }
-    else if (message.content.startsWith(`${prefix}starter`)) {
-        starter(message);
-    }
-    else if (message.content.startsWith(`${prefix}catch`)) {
-        catchPokemon();
+    try {
+        if (message.content.startsWith(`${prefix}poke`)) {
+            evolve(message, 1, 2);
+        }
+        else if (message.content.startsWith(`${prefix}listpoke`)) {
+            list(message);
+        }
+        else if (message.content.startsWith(`${prefix}starter`)) {
+            starter(message);
+        }
+        else if (message.content.startsWith(`${prefix}catch`)) {
+            catchPokemon(message);
+        }
+    } catch (e) {
+        console.error(e);
     }
 }
 
-const catchPokemon = () => {
+const chanceEncounter = (msg) => {
+    let diceRoll = getRandomInt(1, 5);
+    console.log('diceRoll', diceRoll);
+};
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+}
+
+const catchPokemon = (msg, id) => {
+    let playerId = msg.author.id;
+    if (!id) id = 0; // For testing
     console.log('tryna catch poke');
+    let count = save[playerId].pokemon.length + 1;
+    save[playerId].pokemon.push({
+        id: id,
+        selfId: count,
+        level: 1,
+        xp: 0
+    });
+    for (let i = 0; i < save[playerId].spriteCheck.length; i++) {
+        // Adds a self Id to the sprite check entry if one found for the pokemon ID.
+        if (save[playerId].spriteCheck[i].id === id) {
+            save[playerId].spriteCheck[i].selfIds.push(count);
+            break;
+        }
+        // Adds a new sprite check entry if none exists for that pokemon ID.
+        else if (i === save[playerId].spriteCheck.length - 1) {
+            save[playerId].spriteCheck.push({
+                sprite: pokemonInfo[id].sprite,
+                selfIds: [count],
+                id: id
+            });
+            break;
+        }
+    }
+
+
+    saveFile();
 }
 
 const evolve = (message, id1, id2) => {
@@ -95,17 +140,17 @@ const saveFile = () => {
 
 exports.buttonHandler = (i) => {
     let playerId = i.member.user.id;
-    let chosenId =  parseInt(i.customId);
+    let chosenId = parseInt(i.customId);
     let { sprite, name } = pokemonInfo[chosenId];
     if (!save[playerId]) {
         save[playerId] = {
             pokemon: [{
                 id: chosenId,
-                selfId: 1, //TODO
+                selfId: 1,
                 level: 1,
                 xp: 0
             }],
-            spriteCheck: [sprite]
+            spriteCheck: [{ sprite: sprite, selfIds: [1], id: chosenId }]
         }
         i.channel.send(`${i.member.user.username}, you have selected **${name}** ${sprite} as your starter.`);
         console.log('saved:', save);
@@ -115,31 +160,50 @@ exports.buttonHandler = (i) => {
     }
 }
 
+/**
+ * Handles gathering XP upon an emoji being typed out
+ * @param {Object} msg discord message object 
+ */
 exports.emojiHandler = (msg) => {
     let playerid = msg.author.id;
     if (save[playerid]) {
-        if (save[playerid].spriteCheck.includes(msg.content)) {
-            console.log('pog');
-            levelUp(playerid, save[playerid].spriteCheck.indexOf(msg.content), msg);
-            msg.react('⬆️');
+        for (let i = 0; i < save[playerid].spriteCheck.length; i++) {
+            if (msg.content.includes(save[playerid].spriteCheck[i].sprite)) {
+                console.log('pog');
+                levelUp(playerid, save[playerid].spriteCheck[i].id, msg, i);
+                msg.react('⬆️');
+            }
         }
+
     }
+    chanceEncounter(msg);
 }
 
-const levelUp = (playerid, index, msg) => {
-    let { xp, level, id } = save[playerid].pokemon[index];
-    xp += 50;
-    if (xp >= 100) {
-        let { name, id: pokemonId, evolve: pokemonEvolve, evolveLvl } = pokemonInfo[id];
-        xp = 0;
-        level += 1;
-        msg.channel.send(`${name} has levelled up to ${level}`);
-        if (level >= evolveLvl) {
-            evolve(msg, pokemonId, pokemonEvolve);
-            id = pokemonEvolve;
-            save[playerid].spriteCheck[index] = pokemonInfo[id].sprite;
+/**
+ * Handles the xp gain and the levelling up of a pokemon
+ * @param {string} playerid 
+ * @param {number} index 
+ * @param {object} msg 
+ */
+const levelUp = (playerid, index, msg, indexPos) => {
+    let playerPokemon = save[playerid].pokemon;
+    for (let i = 0; i < playerPokemon.length; i++) {
+        if (playerPokemon[i].id === index) {
+            let { xp, level, id } = playerPokemon[i];
+            xp += xpGain; // 50
+            if (xp >= 100) {
+                let { name, id: pokemonId, evolve: pokemonEvolve, evolveLvl } = pokemonInfo[id];
+                xp = 0;
+                level += 1;
+                msg.channel.send(`${name} has levelled up to ${level}`);
+                if (level >= evolveLvl) {
+                    evolve(msg, pokemonId, pokemonEvolve);
+                    id = pokemonEvolve;
+                    save[playerid].spriteCheck[indexPos] = pokemonInfo[id].sprite;// Needs fixing. currently sets the whole thing to one.
+                }
+            }
+            save[playerid].pokemon[i] = { ...save[playerid].pokemon[i], xp, level, id }
+            saveFile();
         }
     }
-    save[playerid].pokemon[index] = { ...save[playerid].pokemon[index], xp, level, id }
-    saveFile();
 }
